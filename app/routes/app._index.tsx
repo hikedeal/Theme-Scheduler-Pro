@@ -78,18 +78,22 @@ export default function DashboardPage() {
       <BlockStack gap="600">
         
         {/* Header Section */}
-        <div className="futuristic-card" style={{ padding: '24px', marginBottom: '24px' }}>
-          <InlineStack align="space-between" blockAlign="center">
-            <BlockStack gap="100">
-               <Text as="h1" variant="headingXl">Dashboard Overview</Text>
-               <Text as="p" variant="bodyMd" tone="subdued">Track your theme publication activity and metrics in real-time.</Text>
-            </BlockStack>
-            <InlineStack gap="300">
-               <Button onClick={() => navigate("/app/scheduler")}>Go to Scheduler</Button>
-               <Button variant="primary" onClick={() => navigate("/app/scheduler")}>Schedule Theme</Button>
-            </InlineStack>
-          </InlineStack>
-        </div>
+        <Layout>
+          <Layout.Section>
+            <div className="futuristic-card" style={{ padding: '24px' }}>
+              <InlineStack align="space-between" blockAlign="center">
+                <BlockStack gap="100">
+                   <Text as="h1" variant="headingXl">Dashboard Overview</Text>
+                   <Text as="p" variant="bodyMd" tone="subdued">Track your theme publication activity and metrics in real-time.</Text>
+                </BlockStack>
+                <InlineStack gap="300">
+                   <Button onClick={() => navigate("/app/scheduler")}>Go to Scheduler</Button>
+                   <Button variant="primary" onClick={() => navigate("/app/scheduler")}>Schedule Theme</Button>
+                </InlineStack>
+              </InlineStack>
+            </div>
+          </Layout.Section>
+        </Layout>
 
         {/* Top Metric Cards */}
         <Layout>

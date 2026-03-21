@@ -100,86 +100,90 @@ export default function HistoryPage() {
           </Layout.Section>
         </Layout>
 
-        <Card padding="0">
-          <Box padding="400" paddingBlockEnd="0">
-            <Text as="h3" variant="headingMd">{lang.historyPage.detailedLog}</Text>
-          </Box>
+        <Layout>
+          <Layout.Section>
+            <Card padding="0">
+              <Box padding="400" paddingBlockEnd="0">
+                <Text as="h3" variant="headingMd">{lang.historyPage.detailedLog}</Text>
+              </Box>
 
-          {schedules.length === 0 ? (
-            <Box padding="800">
-              <EmptyState
-                heading={lang.historyPage.noHistory}
-                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-              >
-                <p>Schedule your first theme publish to see data here.</p>
-              </EmptyState>
-            </Box>
-          ) : (
-            <Box paddingBlockStart="400">
-              <IndexTable
-                resourceName={{ singular: 'schedule', plural: 'schedules' }}
-                itemCount={schedules.length}
-                headings={[
-                  { title: lang.historyPage.theme || 'Theme' },
-                  { title: lang.historyPage.publisher || 'Publisher' },
-                  { title: lang.historyPage.updateNotes || 'Update Notes' },
-                  { title: lang.historyPage.publishedAt || 'Published At' },
-                  { title: lang.historyPage.status || 'Status' },
-                  { title: lang.historyPage.actions || 'Actions', alignment: 'end' },
-                ]}
-                selectable={false}
-              >
-                {schedules.map((schedule: any, index: number) => (
-                  <IndexTable.Row id={schedule.id.toString()} key={schedule.id} position={index}>
-                    <IndexTable.Cell>
-                      <BlockStack gap="100">
-                        <Text as="span" variant="bodyMd" fontWeight="bold">{schedule.themeName}</Text>
-                        <InlineStack>
-                          <Button variant="plain" size="slim" onClick={() => window.open(`https://admin.shopify.com/store/${shop}/themes/${schedule.themeId}/editor`, "_blank")}>
-                            {lang.historyPage.preview || "Preview"}
-                          </Button>
-                        </InlineStack>
-                      </BlockStack>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Text as="span" variant="bodyMd">{schedule.userName}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Text tone="subdued" as="span">{schedule.notes || "No notes"}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Text as="span" variant="bodyMd">{new Date(schedule.scheduledAt).toLocaleString()}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Badge tone={
-                        schedule.status === "completed" ? "success" : 
-                        schedule.status === "failed" ? "critical" : "attention"
-                      }>
-                        {schedule.status.toUpperCase()}
-                      </Badge>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <div style={{ textAlign: 'right' }}>
-                        <Button
-                          tone="critical"
-                          variant="plain"
-                          size="slim"
-                          onClick={() => {
-                            if (confirm("Are you sure?")) {
-                              fetcher.submit({ intent: "delete", id: schedule.id.toString() }, { method: "POST" });
-                            }
-                          }}
-                        >
-                          {lang.historyPage.delete || "Delete"}
-                        </Button>
-                      </div>
-                    </IndexTable.Cell>
-                  </IndexTable.Row>
-                ))}
-              </IndexTable>
-            </Box>
-          )}
-        </Card>
+              {schedules.length === 0 ? (
+                <Box padding="800">
+                  <EmptyState
+                    heading={lang.historyPage.noHistory}
+                    image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+                  >
+                    <p>Schedule your first theme publish to see data here.</p>
+                  </EmptyState>
+                </Box>
+              ) : (
+                <Box paddingBlockStart="400">
+                  <IndexTable
+                    resourceName={{ singular: 'schedule', plural: 'schedules' }}
+                    itemCount={schedules.length}
+                    headings={[
+                      { title: lang.historyPage.theme || 'Theme' },
+                      { title: lang.historyPage.publisher || 'Publisher' },
+                      { title: lang.historyPage.updateNotes || 'Update Notes' },
+                      { title: lang.historyPage.publishedAt || 'Published At' },
+                      { title: lang.historyPage.status || 'Status' },
+                      { title: lang.historyPage.actions || 'Actions', alignment: 'end' },
+                    ]}
+                    selectable={false}
+                  >
+                    {schedules.map((schedule: any, index: number) => (
+                      <IndexTable.Row id={schedule.id.toString()} key={schedule.id} position={index}>
+                        <IndexTable.Cell>
+                          <BlockStack gap="100">
+                            <Text as="span" variant="bodyMd" fontWeight="bold">{schedule.themeName}</Text>
+                            <InlineStack>
+                              <Button variant="plain" size="slim" onClick={() => window.open(`https://admin.shopify.com/store/${shop}/themes/${schedule.themeId}/editor`, "_blank")}>
+                                {lang.historyPage.preview || "Preview"}
+                              </Button>
+                            </InlineStack>
+                          </BlockStack>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                          <Text as="span" variant="bodyMd">{schedule.userName}</Text>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                          <Text tone="subdued" as="span">{schedule.notes || "No notes"}</Text>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                          <Text as="span" variant="bodyMd">{new Date(schedule.scheduledAt).toLocaleString()}</Text>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                          <Badge tone={
+                            schedule.status === "completed" ? "success" : 
+                            schedule.status === "failed" ? "critical" : "attention"
+                          }>
+                            {schedule.status.toUpperCase()}
+                          </Badge>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                          <div style={{ textAlign: 'right' }}>
+                            <Button
+                              tone="critical"
+                              variant="plain"
+                              size="slim"
+                              onClick={() => {
+                                if (confirm("Are you sure?")) {
+                                  fetcher.submit({ intent: "delete", id: schedule.id.toString() }, { method: "POST" });
+                                }
+                              }}
+                            >
+                              {lang.historyPage.delete || "Delete"}
+                            </Button>
+                          </div>
+                        </IndexTable.Cell>
+                      </IndexTable.Row>
+                    ))}
+                  </IndexTable>
+                </Box>
+              )}
+            </Card>
+          </Layout.Section>
+        </Layout>
       </BlockStack>
     </Page>
   );

@@ -211,21 +211,25 @@ export default function SchedulerPage() {
           </Layout.Section>
         </Layout>
 
-        <div className="quick-actions-bar animate-fade-in">
-          <InlineStack align="space-between" blockAlign="center">
-            <Text as="h2" variant="headingMd">{lang.quickActions.label}</Text>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-              <Button variant="secondary" url="/app/history">{lang.history}</Button>
-              <Button tone="critical" variant="secondary" onClick={() => {
-                const lastCompleted = schedules.find((s: any) => s.status === "completed" && s.id);
-                if (lastCompleted) fetcher.submit({ intent: "revert", id: lastCompleted.id }, { method: "POST" });
-                else shopify.toast.show(lang.quickActions.noHistory, { isError: true });
-              }}>{lang.quickActions.revert}</Button>
-              <Button onClick={() => window.location.reload()}>{lang.quickActions.refresh}</Button>
-              <Button variant="primary" url="shopify:admin/themes">{lang.quickActions.shopify}</Button>
+        <Layout>
+          <Layout.Section>
+            <div className="quick-actions-bar animate-fade-in">
+              <InlineStack align="space-between" blockAlign="center">
+                <Text as="h2" variant="headingMd">{lang.quickActions.label}</Text>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  <Button variant="secondary" url="/app/history">{lang.history}</Button>
+                  <Button tone="critical" variant="secondary" onClick={() => {
+                    const lastCompleted = schedules.find((s: any) => s.status === "completed" && s.id);
+                    if (lastCompleted) fetcher.submit({ intent: "revert", id: lastCompleted.id }, { method: "POST" });
+                    else shopify.toast.show(lang.quickActions.noHistory, { isError: true });
+                  }}>{lang.quickActions.revert}</Button>
+                  <Button onClick={() => window.location.reload()}>{lang.quickActions.refresh}</Button>
+                  <Button variant="primary" url="shopify:admin/themes">{lang.quickActions.shopify}</Button>
+                </div>
+              </InlineStack>
             </div>
-          </InlineStack>
-        </div>
+          </Layout.Section>
+        </Layout>
 
         <Layout>
           {/* Themes Section (Now First/Left) */}
