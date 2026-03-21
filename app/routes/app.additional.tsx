@@ -73,7 +73,7 @@ export default function HistoryPage() {
         {/* Top Metric Cards */}
         <Layout>
           <Layout.Section variant="oneThird">
-            <div className="metric-card-success">
+            <div className="futuristic-card metric-card-success" style={{ padding: '24px' }}>
               <BlockStack gap="100">
                 <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.successRate || "Overall Success Rate"}</Text>
                 <Text as="p" variant="heading3xl" fontWeight="bold">{successRate}%</Text>
@@ -82,7 +82,7 @@ export default function HistoryPage() {
           </Layout.Section>
           
           <Layout.Section variant="oneThird">
-            <div className="metric-card-info">
+            <div className="futuristic-card metric-card-info" style={{ padding: '24px' }}>
               <BlockStack gap="100">
                 <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.totalPublishes || "Total Records"}</Text>
                 <Text as="p" variant="heading3xl" fontWeight="bold">{stats.total}</Text>
@@ -91,7 +91,7 @@ export default function HistoryPage() {
           </Layout.Section>
 
           <Layout.Section variant="oneThird">
-            <div className="metric-card-pending">
+            <div className="futuristic-card metric-card-pending" style={{ padding: '24px' }}>
               <BlockStack gap="100">
                 <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.failedAttempts || "Failed Attempts"}</Text>
                 <Text as="p" variant="heading3xl" fontWeight="bold">{stats.failed}</Text>
