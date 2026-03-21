@@ -1,0 +1,219 @@
+:root {
+  --p-border-subtle: rgba(0, 0, 0, 0.06);
+  --p-border-baseline: rgba(0, 0, 0, 0.1);
+  --p-bg-subtle: #f9fafb;
+  --p-bg-surface: #ffffff;
+  --p-text-primary: #111827;
+  --p-text-secondary: #4b5563;
+  --p-text-tertiary: #9ca3af;
+  --p-accent: #0f172a;
+  --p-accent-blue: #2563eb;
+  --p-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --p-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body {
+  background-color: var(--p-bg-subtle) !important;
+  background-image: none !important;
+  color: var(--p-text-primary) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Modern Card Layouts */
+.futuristic-card, .activity-item, .hero-stats, .quick-actions-bar, .app-promo-card .Polaris-Card, .step-card .Polaris-Card, .support-section .Polaris-Card {
+  background: var(--p-bg-surface) !important;
+  border: 1px solid var(--p-border-baseline) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--p-shadow-sm) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.futuristic-card:hover, .activity-item:hover, .app-promo-card .Polaris-Card:hover, .step-card .Polaris-Card:hover {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: var(--p-shadow-md) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Typography Overrides */
+.white-text {
+  color: var(--p-text-primary) !important; 
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.neon-text {
+  color: var(--p-text-secondary) !important;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--p-text-primary);
+  letter-spacing: -0.025em;
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--p-text-tertiary);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--p-text-primary);
+}
+
+.hero-subtitle {
+  color: var(--p-text-secondary);
+  font-weight: 400;
+  font-size: 1.125rem;
+}
+
+/* Base Overrides */
+.hero-stats {
+  padding: 32px;
+  display: flex !important;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.quick-actions-bar {
+  padding: 16px 24px;
+}
+
+.futuristic-card, .activity-item {
+  margin: 12px 16px !important;
+  padding: 16px !important;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Live indicators / Badges */
+.live-pulse {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  border-radius: 6px !important;
+  animation: none !important;
+}
+
+.live-pulse .Polaris-Text--bodyMd {
+  color: #166534 !important;
+  font-weight: 500;
+}
+
+/* Colorful Metric Cards */
+.metric-card-success {
+  background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%) !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.15) !important;
+}
+.metric-card-success .Polaris-Text--headingMd, .metric-card-success .Polaris-Text--heading3xl {
+  color: #065f46 !important;
+}
+
+.metric-card-pending {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border-color: #fde68a !important;
+  box-shadow: 0 4px 15px -3px rgba(245, 158, 11, 0.15) !important;
+}
+.metric-card-pending .Polaris-Text--headingMd, .metric-card-pending .Polaris-Text--heading3xl {
+  color: #92400e !important;
+}
+
+.metric-card-info {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+  border-color: #bfdbfe !important;
+  box-shadow: 0 4px 15px -3px rgba(59, 130, 246, 0.15) !important;
+}
+.metric-card-info .Polaris-Text--headingMd, .metric-card-info .Polaris-Text--heading3xl {
+  color: #1e40af !important;
+}
+
+/* Premium Gradient Text Utility */
+.premium-gradient-text {
+  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+/* History Grid */
+.history-grid-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--p-bg-surface);
+  border: 1px solid var(--p-border-baseline);
+  box-shadow: var(--p-shadow-sm);
+}
+
+.grid-header {
+  background: #f9fafb !important;
+  color: var(--p-text-secondary) !important;
+  border-bottom: 1px solid var(--p-border-baseline) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+.grid-row {
+  border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+  color: var(--p-text-primary) !important;
+}
+
+.cell-theme {
+  color: var(--p-text-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* Resets */
+.hero-container {
+  background: var(--p-bg-surface);
+  border: 1px solid var(--p-border-baseline);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow-sm);
+  padding: 40px;
+}
+
+.hero-container::before {
+  display: none;
+}
+
+.promo-image-container {
+  background: var(--p-bg-subtle);
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid var(--p-border-subtle);
+}
+
+.support-icon {
+  background: var(--p-bg-subtle);
+  border: 1px solid var(--p-border-subtle);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--p-text-secondary);
+}
+
+.Polaris-Page, 
+.Polaris-Frame__Content,
+.Polaris-Layout,
+.Polaris-Box,
+#AppFrame {
+  background: transparent !important;
+}
