@@ -27,6 +27,12 @@ import {
 } from "../models/scheduler.server";
 import { getTranslations, Language } from "../utils/translations";
 import "../styles/custom.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
@@ -34,7 +40,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const response = await admin.graphql(
     `#graphql
-    query getThemes {
+    query getData {
+      shop {
+        ianaTimezone
+      }
       themes(first: 20) {
         edges {
           node {
@@ -47,8 +56,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }`
   );
 
-  const themesData: any = await response.json();
-  const themes = themesData.data.themes.edges.map((edge: any) => ({
+  const graphqlData: any = await response.json();
+  const ianaTimezone = graphqlData.data.shop?.ianaTimezone || "UTC";
+  const themes = graphqlData.data.themes.edges.map((edge: any) => ({
     id: edge.node.id.split("/").pop(), // Extract ID from GID
     name: edge.node.name,
     role: edge.node.role.toLowerCase(),
@@ -67,7 +77,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     console.error("Language loading error (Scheduler):", e);
   }
 
-  return { themes, schedules, shop, language };
+  return { themes, schedules, shop, language, ianaTimezone };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -82,7 +92,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const userName = formData.get("userName") as string;
     const notes = formData.get("notes") as string;
     const scheduledAtStr = formData.get("scheduledAt") as string;
-    const scheduledAt = new Date(scheduledAtStr);
+    const storeTimezone = formData.get("storeTimezone") as string || "UTC";
+    
+    // Parse using the physically correct store timezone before committing to the database as UTC Date
+    const scheduledAt = dayjs.tz(scheduledAtStr, storeTimezone).toDate();
 
     if (!userName) return { error: "Publisher name is required." };
     if (isNaN(scheduledAt.getTime())) return { error: "Invalid date provided." };
@@ -135,10 +148,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function SchedulerPage() {
-  const { themes, schedules, shop, language } = useLoaderData<typeof loader>();
+  const { themes, schedules, shop, language, ianaTimezone } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<any>();
   const lang = getTranslations(language as Language);
   const shopify = useAppBridge();
+
+  const formatStoreTime = (dateString: string) => {
+    try {
+      return new Intl.DateTimeFormat('en-US', { 
+        dateStyle: 'medium', 
+        timeStyle: 'short', 
+        timeZone: ianaTimezone 
+      }).format(new Date(dateString));
+    } catch {
+      return new Date(dateString).toLocaleString();
+    }
+  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<{ id: string; name: string } | null>(null);
@@ -159,7 +184,7 @@ export default function SchedulerPage() {
       shopify.toast.show("Please fill all required fields", { isError: true });
       return;
     }
-    fetcher.submit({ intent: "schedule", themeId: selectedTheme.id, themeName: selectedTheme.name, userName, notes, scheduledAt }, { method: "POST" });
+    fetcher.submit({ intent: "schedule", themeId: selectedTheme.id, themeName: selectedTheme.name, userName, notes, scheduledAt, storeTimezone: ianaTimezone }, { method: "POST" });
     handleModalClose();
   };
 
@@ -282,11 +307,11 @@ export default function SchedulerPage() {
                             <Badge tone={schedule.status === "completed" ? "success" : schedule.status === "failed" ? "critical" : "attention"}>{schedule.status.toUpperCase()}</Badge>
                           </div>
                           <Text as="p" variant="bodySm" tone="subdued">
-                            {lang.modal.time}: {new Date(schedule.scheduledAt).toLocaleString()}
+                            {lang.modal.time}: {formatStoreTime(schedule.scheduledAt)}
                           </Text>
                           {schedule.executedAt && (
                             <Text as="p" variant="bodySm" tone="subdued">
-                              {lang.historyPage.publishedAt}: {new Date(schedule.executedAt).toLocaleString()}
+                              {lang.historyPage.publishedAt}: {formatStoreTime(schedule.executedAt)}
                             </Text>
                           )}
                           <Text as="p" variant="bodySm" tone="subdued">{lang.activity.by} <span className="neon-text">{schedule.userName}</span></Text>
@@ -327,6 +352,7 @@ export default function SchedulerPage() {
             <TextField label={lang.modal.publisher} value={userName} onChange={setUserName} placeholder="e.g. John Doe" autoComplete="off" />
             <TextField label={lang.modal.notes} value={notes} onChange={setNotes} placeholder={lang.modal.notesPlaceholder} multiline={3} autoComplete="off" />
             <TextField label={lang.modal.time} type="datetime-local" value={scheduledAt} onChange={setScheduledAt} autoComplete="off" />
+            <Text as="p" variant="bodySm" tone="subdued">Store Timezone: {ianaTimezone}</Text>
           </BlockStack>
         </Modal.Section>
       </Modal>

@@ -25,6 +25,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const shop = session.shop.toLowerCase().replace('https://', '').split('/')[0];
 
   const schedules = await getAllSchedules(shop);
+
+  let ianaTimezone = "UTC";
+  try {
+    const { admin } = await authenticate.admin(request);
+    const tzResponse = await admin.graphql(
+      `#graphql
+      query { shop { ianaTimezone } }`
+    );
+    const tzData = await tzResponse.json();
+    ianaTimezone = tzData.data.shop?.ianaTimezone || "UTC";
+  } catch (e) {
+    console.error("Timezone fetch error:", e);
+  }
+
   let language: Language = 'en';
   try {
     const settings = await prisma.shopSettings.findUnique({ where: { shop } });
@@ -33,7 +47,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     console.error("Language loading error (History):", e);
   }
 
-  return { schedules, shop, language };
+  return { schedules, shop, language, ianaTimezone };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -52,9 +66,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function HistoryPage() {
-  const { schedules, shop, language } = useLoaderData<typeof loader>();
+  const { schedules, shop, language, ianaTimezone } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
   const lang = getTranslations(language as Language);
+  
+  const formatStoreTime = (dateString: string) => {
+    try {
+      return new Intl.DateTimeFormat('en-US', { 
+        dateStyle: 'medium', 
+        timeStyle: 'short', 
+        timeZone: ianaTimezone 
+      }).format(new Date(dateString));
+    } catch {
+      return new Date(dateString).toLocaleString();
+    }
+  };
   
   const stats = {
     total: schedules.length,
@@ -150,7 +176,7 @@ export default function HistoryPage() {
                           <Text tone="subdued" as="span">{schedule.notes || "No notes"}</Text>
                         </IndexTable.Cell>
                         <IndexTable.Cell>
-                          <Text as="span" variant="bodyMd">{new Date(schedule.scheduledAt).toLocaleString()}</Text>
+                          <Text as="span" variant="bodyMd">{formatStoreTime(schedule.scheduledAt)}</Text>
                         </IndexTable.Cell>
                         <IndexTable.Cell>
                           <Badge tone={

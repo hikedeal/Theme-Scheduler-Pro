@@ -20,10 +20,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop.toLowerCase().replace('https://', '').split('/')[0];
   
-  // Fetch themes
+  // Fetch themes and timezone
   const response = await admin.graphql(
     `#graphql
     query getThemes {
+      shop {
+        ianaTimezone
+      }
       themes(first: 50) {
         edges {
           node {
@@ -35,9 +38,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       }
     }`
   );
-  const themesData: any = await response.json();
-  const totalThemes = themesData.data.themes.edges.length;
-  const mainTheme = themesData.data.themes.edges.find((edge: any) => edge.node.role.toLowerCase() === 'main')?.node;
+  const graphqlData: any = await response.json();
+  const totalThemes = graphqlData.data.themes.edges.length;
+  const mainTheme = graphqlData.data.themes.edges.find((edge: any) => edge.node.role.toLowerCase() === 'main')?.node;
+  const ianaTimezone = graphqlData.data.shop?.ianaTimezone || "UTC";
 
   // Fetch schedules
   const schedules = await getAllSchedules(shop);
@@ -55,7 +59,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     completedTasks, 
     pendingTasks, 
     failedTasks, 
-    recentActivity 
+    recentActivity,
+    ianaTimezone
   };
 };
 
@@ -66,10 +71,23 @@ export default function DashboardPage() {
     completedTasks, 
     pendingTasks, 
     failedTasks, 
-    recentActivity 
+    recentActivity,
+    ianaTimezone
   } = useLoaderData<typeof loader>();
   
   const navigate = useNavigate();
+
+  const formatStoreTime = (dateString: string) => {
+    try {
+      return new Intl.DateTimeFormat('en-US', { 
+        dateStyle: 'medium', 
+        timeStyle: 'short', 
+        timeZone: ianaTimezone 
+      }).format(new Date(dateString));
+    } catch {
+      return new Date(dateString).toLocaleString();
+    }
+  };
 
   return (
     <Page fullWidth>
@@ -171,7 +189,7 @@ export default function DashboardPage() {
                          <BlockStack gap="100">
                             <Text as="span" variant="bodyMd" fontWeight="bold">{activity.themeName}</Text>
                             <Text as="span" variant="bodySm" tone="subdued">
-                               By {activity.userName} • {new Date(activity.scheduledAt).toLocaleString()}
+                               By {activity.userName} • {formatStoreTime(activity.scheduledAt)}
                             </Text>
                          </BlockStack>
                          <Badge tone={
