@@ -160,14 +160,12 @@ export default function DashboardPage() {
           <Layout.Section>
             <div className="futuristic-card">
               <Card padding="0">
-                <Box padding="500">
-                  <div style={{ borderBottom: '1px solid var(--p-color-border)' }}>
-                  <InlineStack align="space-between">
-                    <Text as="h2" variant="headingLg">Recent Scheduling Activity</Text>
+                <div style={{ padding: '20px', borderBottom: '1px solid var(--p-border-subtle)' }}>
+                  <InlineStack align="space-between" blockAlign="center">
+                    <Text as="h2" variant="headingMd">Recent Scheduling Activity</Text>
                     {recentActivity.length > 0 && <Button variant="plain" onClick={() => navigate("/app/scheduler")}>View All</Button>}
                   </InlineStack>
-                  </div>
-                </Box>
+                </div>
                 
                 {recentActivity.length === 0 ? (
                   <Box padding="800">
