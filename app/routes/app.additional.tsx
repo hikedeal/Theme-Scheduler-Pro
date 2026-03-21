@@ -7,8 +7,11 @@ import {
   Card,
   Button,
   BlockStack,
+  InlineStack,
   Badge,
   EmptyState,
+  Box,
+  IndexTable,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
@@ -67,103 +70,116 @@ export default function HistoryPage() {
       
       <BlockStack gap="600">
         
-        {/* Futuristic Stats Header */}
-        <div className="hero-stats animate-fade-in">
-          <div className="stat-item">
-            <span className="stat-label">{lang.historyPage.successRate}</span>
-            <span className="stat-value neon-text">{successRate}%</span>
-          </div>
-          <div className="stat-item" style={{ borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: '40px' }}>
-            <span className="stat-label">{lang.historyPage.totalPublishes}</span>
-            <span className="stat-value white-text">{stats.total}</span>
-          </div>
-          <div className="stat-item" style={{ borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: '40px' }}>
-            <span className="stat-label">{lang.historyPage.failedAttempts}</span>
-            <span className="stat-value" style={{ color: 'var(--p-color-neon-pink)' }}>{stats.failed}</span>
-          </div>
-        </div>
-
-        <div className="animate-fade-in">
-          <Card padding="0">
-            <div className="futuristic-card" style={{ padding: '0', overflow: 'hidden' }}>
-              <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
-                <span className="neon-text">
-                  <Text as="h2" variant="headingMd">{lang.historyPage.detailedLog}</Text>
-                </span>
-              </div>
-
-              {schedules.length === 0 ? (
-                <div style={{ padding: '100px 0' }}>
-                  <EmptyState
-                    heading={lang.historyPage.noHistory}
-                    image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-                  >
-                    <p>Schedule your first theme publish to see data here.</p>
-                  </EmptyState>
-                </div>
-              ) : (
-                <div className="history-grid-container">
-                  <div className="history-grid">
-                    {/* Grid Header */}
-                    <div className="grid-header">
-                      <div>{lang.historyPage.theme}</div>
-                      <div>{lang.historyPage.publisher}</div>
-                      <div>{lang.historyPage.updateNotes}</div>
-                      <div>{lang.historyPage.publishedAt}</div>
-                      <div>{lang.historyPage.status}</div>
-                      <div style={{ textAlign: 'right' }}>{lang.historyPage.actions}</div>
-                    </div>
-                    
-                    {/* Grid Body */}
-                    <div className="grid-body">
-                      {schedules.map((schedule: any) => (
-                        <div key={schedule.id} className="grid-row">
-                          <div className="cell-theme">
-                            <span className="white-text" style={{ fontWeight: '600' }}>{schedule.themeName}</span>
-                            <Button variant="plain" size="slim" url={`shopify:admin/themes/${schedule.themeId}`}>
-                              {lang.historyPage.preview}
-                            </Button>
-                          </div>
-                          <div className="cell-publisher">
-                            <span className="neon-text" style={{ fontSize: '13px' }}>{schedule.userName}</span>
-                          </div>
-                          <div className="cell-notes">
-                             <span style={{ fontSize: '12px', opacity: 0.6 }}>{schedule.notes || "No notes"}</span>
-                          </div>
-                          <div className="cell-date">
-                            {new Date(schedule.scheduledAt).toLocaleString()}
-                          </div>
-                          <div className="cell-status">
-                            <Badge tone={
-                              schedule.status === "completed" ? "success" : 
-                              schedule.status === "failed" ? "critical" : "attention"
-                            }>
-                              {schedule.status.toUpperCase()}
-                            </Badge>
-                          </div>
-                          <div className="cell-actions" style={{ textAlign: 'right' }}>
-                            <Button
-                              tone="critical"
-                              variant="plain"
-                              size="slim"
-                              onClick={() => {
-                                if (confirm("Are you sure?")) {
-                                  fetcher.submit({ intent: "delete", id: schedule.id.toString() }, { method: "POST" });
-                                }
-                              }}
-                            >
-                              {lang.historyPage.delete}
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+        {/* Top Metric Cards */}
+        <Layout>
+          <Layout.Section variant="oneThird">
+            <div className="metric-card-success">
+              <BlockStack gap="100">
+                <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.successRate || "Overall Success Rate"}</Text>
+                <Text as="p" variant="heading3xl" fontWeight="bold">{successRate}%</Text>
+              </BlockStack>
             </div>
-          </Card>
-        </div>
+          </Layout.Section>
+          
+          <Layout.Section variant="oneThird">
+            <div className="metric-card-info">
+              <BlockStack gap="100">
+                <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.totalPublishes || "Total Records"}</Text>
+                <Text as="p" variant="heading3xl" fontWeight="bold">{stats.total}</Text>
+              </BlockStack>
+            </div>
+          </Layout.Section>
+
+          <Layout.Section variant="oneThird">
+            <div className="metric-card-pending">
+              <BlockStack gap="100">
+                <Text as="h2" variant="headingSm" fontWeight="medium">{lang.historyPage.failedAttempts || "Failed Attempts"}</Text>
+                <Text as="p" variant="heading3xl" fontWeight="bold">{stats.failed}</Text>
+              </BlockStack>
+            </div>
+          </Layout.Section>
+        </Layout>
+
+        <Card padding="0">
+          <Box padding="400" paddingBlockEnd="0">
+            <Text as="h3" variant="headingMd">{lang.historyPage.detailedLog}</Text>
+          </Box>
+
+          {schedules.length === 0 ? (
+            <Box padding="800">
+              <EmptyState
+                heading={lang.historyPage.noHistory}
+                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+              >
+                <p>Schedule your first theme publish to see data here.</p>
+              </EmptyState>
+            </Box>
+          ) : (
+            <Box paddingBlockStart="400">
+              <IndexTable
+                resourceName={{ singular: 'schedule', plural: 'schedules' }}
+                itemCount={schedules.length}
+                headings={[
+                  { title: lang.historyPage.theme || 'Theme' },
+                  { title: lang.historyPage.publisher || 'Publisher' },
+                  { title: lang.historyPage.updateNotes || 'Update Notes' },
+                  { title: lang.historyPage.publishedAt || 'Published At' },
+                  { title: lang.historyPage.status || 'Status' },
+                  { title: lang.historyPage.actions || 'Actions', alignment: 'end' },
+                ]}
+                selectable={false}
+              >
+                {schedules.map((schedule: any, index: number) => (
+                  <IndexTable.Row id={schedule.id.toString()} key={schedule.id} position={index}>
+                    <IndexTable.Cell>
+                      <BlockStack gap="100">
+                        <Text as="span" variant="bodyMd" fontWeight="bold">{schedule.themeName}</Text>
+                        <InlineStack>
+                          <Button variant="plain" size="slim" onClick={() => window.open(`https://admin.shopify.com/store/${shop}/themes/${schedule.themeId}/editor`, "_blank")}>
+                            {lang.historyPage.preview || "Preview"}
+                          </Button>
+                        </InlineStack>
+                      </BlockStack>
+                    </IndexTable.Cell>
+                    <IndexTable.Cell>
+                      <Text as="span" variant="bodyMd">{schedule.userName}</Text>
+                    </IndexTable.Cell>
+                    <IndexTable.Cell>
+                      <Text tone="subdued" as="span">{schedule.notes || "No notes"}</Text>
+                    </IndexTable.Cell>
+                    <IndexTable.Cell>
+                      <Text as="span" variant="bodyMd">{new Date(schedule.scheduledAt).toLocaleString()}</Text>
+                    </IndexTable.Cell>
+                    <IndexTable.Cell>
+                      <Badge tone={
+                        schedule.status === "completed" ? "success" : 
+                        schedule.status === "failed" ? "critical" : "attention"
+                      }>
+                        {schedule.status.toUpperCase()}
+                      </Badge>
+                    </IndexTable.Cell>
+                    <IndexTable.Cell>
+                      <div style={{ textAlign: 'right' }}>
+                        <Button
+                          tone="critical"
+                          variant="plain"
+                          size="slim"
+                          onClick={() => {
+                            if (confirm("Are you sure?")) {
+                              fetcher.submit({ intent: "delete", id: schedule.id.toString() }, { method: "POST" });
+                            }
+                          }}
+                        >
+                          {lang.historyPage.delete || "Delete"}
+                        </Button>
+                      </div>
+                    </IndexTable.Cell>
+                  </IndexTable.Row>
+                ))}
+              </IndexTable>
+            </Box>
+          )}
+        </Card>
       </BlockStack>
     </Page>
   );
